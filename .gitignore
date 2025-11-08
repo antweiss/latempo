@@ -1,0 +1,34 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Output
+/output/
+/generated/
+*.tar.gz
+
+# Testing
+/.pytest_cache/
+/__pycache__/
+*.pyc
+
+# Temporal
+.temporal/
+
+# Logs
+*.log
+logs/
