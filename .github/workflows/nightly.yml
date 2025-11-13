@@ -1,0 +1,120 @@
+name: Nightly Build
+
+on:
+  schedule:
+    # Run every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  # Test against Rust nightly
+  nightly-build:
+    name: Nightly Rust Build
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Don't fail if nightly breaks
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Rust nightly
+      uses: dtolnay/rust-toolchain@nightly
+      with:
+        components: rustfmt, clippy
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: nightly-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Build with nightly
+      run: cargo +nightly build --all-features
+      continue-on-error: true
+
+    - name: Test with nightly
+      run: cargo +nightly test --all-features
+      env:
+        ANTHROPIC_API_KEY: test-key-for-ci
+      continue-on-error: true
+
+    - name: Run clippy with nightly
+      run: cargo +nightly clippy --all-targets --all-features
+      continue-on-error: true
+
+  # Check for outdated dependencies
+  check-outdated:
+    name: Check Outdated Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Install cargo-outdated
+      run: cargo install cargo-outdated
+
+    - name: Check for outdated dependencies
+      run: cargo outdated --exit-code 1
+      continue-on-error: true
+
+    - name: Create issue if outdated dependencies found
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = '🔄 Outdated dependencies detected';
+          const body = 'The nightly build detected outdated dependencies. Please review and update.';
+
+          const issues = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+            labels: ['dependencies', 'automated']
+          });
+
+          const existingIssue = issues.data.find(issue => issue.title === title);
+
+          if (!existingIssue) {
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['dependencies', 'automated']
+            });
+          }
+
+  # Performance benchmarks (placeholder for future)
+  benchmarks:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    if: false  # Enable when benchmarks are implemented
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Run benchmarks
+      run: cargo bench --all-features
+
+    - name: Store benchmark results
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        tool: 'cargo'
+        output-file-path: target/criterion/output.txt
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true

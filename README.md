@@ -1,7 +1,9 @@
 # Latempo - AI Workflow Generator
 
 [![Rust](https://img.shields.io/badge/rust-stable-orange.svg)](https://www.rust-lang.org)
+[![CI/CD](https://github.com/antweiss/latempo/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/antweiss/latempo/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Security](https://github.com/antweiss/latempo/workflows/Security%20Scanning/badge.svg)](https://github.com/antweiss/latempo/security)
 
 Transform natural language descriptions into production-ready, executable [Temporal](https://temporal.io) workflows with AI agents, automatically deployed to AWS.
 
@@ -169,6 +171,8 @@ validate against business rules, and route for approval based on amount.
 - [System Design](docs/SYSTEM_DESIGN.md) - Comprehensive architecture documentation
 - [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) - Detailed development roadmap
 - [Complete Specification](complete-workflow-spec.md) - Full project specification
+- [CI/CD Pipeline](docs/CI_CD.md) - CI/CD documentation and workflow guide
+- [Contributing Guide](CONTRIBUTING.md) - How to contribute to the project
 
 ## Development
 
@@ -203,7 +207,22 @@ cargo clippy -- -D warnings
 
 ## Contributing
 
-Contributions are welcome! Please read our contributing guidelines and submit pull requests to our repository.
+Contributions are welcome! We have a comprehensive CI/CD pipeline that runs automated checks on all pull requests.
+
+**Quick Start for Contributors:**
+1. Read the [Contributing Guide](CONTRIBUTING.md)
+2. Fork the repository
+3. Create a feature branch
+4. Make your changes (ensure `cargo fmt` and `cargo clippy` pass)
+5. Submit a pull request
+
+All PRs are automatically checked for:
+- Code formatting and linting
+- Unit and integration tests
+- Security vulnerabilities
+- Documentation completeness
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## License
 

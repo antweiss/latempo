@@ -1,0 +1,136 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  # Quick validation checks
+  validate:
+    name: Quick Validation
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Check formatting
+      run: cargo fmt --all -- --check
+
+    - name: Run clippy
+      run: cargo clippy --all-targets --all-features -- -D warnings
+
+    - name: Check compilation
+      run: cargo check --all-features
+
+    - name: Run tests
+      run: cargo test --all-features
+      env:
+        ANTHROPIC_API_KEY: test-key-for-ci
+
+  # PR size check
+  pr-size:
+    name: Check PR Size
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Check PR size
+      run: |
+        FILES_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
+        LINES_CHANGED=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1 | awk '{print $4+$6}')
+
+        echo "Files changed: $FILES_CHANGED"
+        echo "Lines changed: $LINES_CHANGED"
+
+        if [ $FILES_CHANGED -gt 50 ]; then
+          echo "⚠️ Warning: This PR changes more than 50 files ($FILES_CHANGED files)"
+          echo "Consider breaking it into smaller PRs for easier review."
+        fi
+
+        if [ $LINES_CHANGED -gt 1000 ]; then
+          echo "⚠️ Warning: This PR changes more than 1000 lines ($LINES_CHANGED lines)"
+          echo "Consider breaking it into smaller PRs for easier review."
+        fi
+
+  # Check for TODOs
+  check-todos:
+    name: Check TODOs
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check for TODO comments
+      run: |
+        echo "Checking for TODO comments in modified files..."
+        TODOS=$(git diff origin/${{ github.base_ref }}...HEAD | grep -i "^\+.*TODO" | wc -l || true)
+
+        if [ $TODOS -gt 0 ]; then
+          echo "ℹ️ Found $TODOS new TODO comments in this PR"
+          git diff origin/${{ github.base_ref }}...HEAD | grep -i "^\+.*TODO" || true
+        else
+          echo "✓ No new TODO comments found"
+        fi
+
+  # Verify documentation
+  check-docs:
+    name: Check Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Check documentation builds
+      run: cargo doc --no-deps --all-features --document-private-items
+      env:
+        RUSTDOCFLAGS: -D warnings
+
+    - name: Check for undocumented public items
+      run: |
+        cargo doc --no-deps 2>&1 | grep -i "warning.*undocumented" && exit 1 || exit 0
+
+  # Label based on changes
+  auto-label:
+    name: Auto Label PR
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Label PR based on files
+      uses: actions/labeler@v5
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}

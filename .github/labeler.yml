@@ -1,0 +1,54 @@
+# Automatically label PRs based on file changes
+
+"phase-1":
+  - src/config/**
+  - src/utils/**
+  - src/tools/**
+  - src/cli/**
+
+"phase-2":
+  - src/analyzer/**
+  - src/compiler/**
+
+"phase-3":
+  - src/testing/**
+
+"phase-4":
+  - src/deployment/**
+  - src/storage/**
+  - src/credentials/**
+  - infrastructure/**
+
+"rust":
+  - "**/*.rs"
+  - Cargo.toml
+  - Cargo.lock
+
+"python":
+  - python_runtime/**
+  - "**/*.py"
+
+"documentation":
+  - "**/*.md"
+  - docs/**
+
+"ci/cd":
+  - .github/**
+
+"dependencies":
+  - Cargo.toml
+  - Cargo.lock
+  - python_runtime/requirements.txt
+
+"infrastructure":
+  - infrastructure/**
+  - "**/*.tf"
+
+"templates":
+  - templates/**
+  - "**/*.tera"
+
+"tests":
+  - tests/**
+  - "**/*_test.rs"
+  - "**/test_*.rs"
