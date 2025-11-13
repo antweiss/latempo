@@ -47,6 +47,12 @@ pub enum WorkflowError {
 
     #[error("UI error: {0}")]
     UiError(String),
+
+    #[error("Python execution error: {0}")]
+    PythonExecutionError(String),
+
+    #[error("Dry-run error: {0}")]
+    DryRunError(String),
 }
 
 // Implement From for dialoguer::Error

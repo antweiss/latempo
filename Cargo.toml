@@ -53,6 +53,7 @@ uuid = { version = "1.7", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1.10"
 dotenv = "0.15"
+tempfile = "3.10"
 
 [dev-dependencies]
 mockall = "0.12"
