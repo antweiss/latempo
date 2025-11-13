@@ -1,5 +1,4 @@
-// TODO: Phase 4 - Deployment to AWS
-// pub mod deployer;
-// pub mod aws;
-// pub mod packager;
-// pub mod webhook;
+/// Deployment infrastructure for workflows
+pub mod packager;
+
+pub use packager::{CodePackager, PackageArtifact, PackageManifest};

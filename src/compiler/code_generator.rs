@@ -301,6 +301,7 @@ impl PythonCodeGenerator {
 }
 
 /// Generated code output
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct GeneratedCode {
     pub workflow_code: String,
     pub worker_code: String,

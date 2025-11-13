@@ -1,5 +1,4 @@
-// TODO: Phase 4 - Credential management
-// pub mod manager;
-// pub mod interrogator;
-// pub mod validator;
-// pub mod aws_secrets;
+/// Credential management for workflows
+pub mod aws_secrets;
+
+pub use aws_secrets::{AwsSecretsClient, CredentialValue};
