@@ -209,9 +209,7 @@ pub fn to_pascal_case(s: &str) -> String {
 
 /// Convert to valid Python variable name
 pub fn to_python_var(s: &str) -> String {
-    s.to_lowercase()
-        .replace(['-', ' '], "_")
-        .replace("__", "_")
+    s.to_lowercase().replace(['-', ' '], "_").replace("__", "_")
 }
 
 #[cfg(test)]
