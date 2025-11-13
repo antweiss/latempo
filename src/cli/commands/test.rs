@@ -173,7 +173,7 @@ fn load_workflow_spec(workflow_id: &str) -> Result<WorkflowSpec> {
         .join("spec.json");
 
     if spec_path.exists() {
-        let spec_json = fs::read_to_string(&spec_path).map_err(|e| WorkflowError::IoError(e))?;
+        let spec_json = fs::read_to_string(&spec_path).map_err(WorkflowError::IoError)?;
         serde_json::from_str(&spec_json)
             .map_err(|e| WorkflowError::ValidationError(format!("Invalid workflow spec: {}", e)))
     } else {
@@ -186,7 +186,7 @@ fn load_workflow_spec(workflow_id: &str) -> Result<WorkflowSpec> {
 
 /// Load mock data from file
 fn load_mock_data(path: &str) -> Result<Option<MockDataSet>> {
-    let mock_json = fs::read_to_string(path).map_err(|e| WorkflowError::IoError(e))?;
+    let mock_json = fs::read_to_string(path).map_err(WorkflowError::IoError)?;
 
     let mock_data: MockDataSet = serde_json::from_str(&mock_json)
         .map_err(|e| WorkflowError::ValidationError(format!("Invalid mock data: {}", e)))?;
