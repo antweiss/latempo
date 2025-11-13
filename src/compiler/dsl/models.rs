@@ -46,18 +46,10 @@ pub struct StepSpec {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum StepTypeSpec {
-    Agent {
-        config: AgentConfig,
-    },
-    Activity {
-        config: ActivityConfig,
-    },
-    Approval {
-        config: ApprovalConfig,
-    },
-    Conditional {
-        config: ConditionalConfig,
-    },
+    Agent { config: AgentConfig },
+    Activity { config: ActivityConfig },
+    Approval { config: ApprovalConfig },
+    Conditional { config: ConditionalConfig },
 }
 
 /// AI agent configuration
@@ -218,8 +210,7 @@ pub fn to_pascal_case(s: &str) -> String {
 /// Convert to valid Python variable name
 pub fn to_python_var(s: &str) -> String {
     s.to_lowercase()
-        .replace('-', "_")
-        .replace(' ', "_")
+        .replace(['-', ' '], "_")
         .replace("__", "_")
 }
 

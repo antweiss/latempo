@@ -1,6 +1,6 @@
+pub mod definitions;
 pub mod models;
 pub mod registry;
-pub mod definitions;
 
-pub use models::{ToolDefinition, ToolCategory, ToolParameter, ParameterType};
+pub use models::{ParameterType, ToolCategory, ToolDefinition, ToolParameter};
 pub use registry::ToolRegistry;

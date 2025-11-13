@@ -96,7 +96,11 @@ impl ToolDefinition {
 
 impl ToolParameter {
     /// Create a required parameter
-    pub fn required(name: impl Into<String>, param_type: ParameterType, description: impl Into<String>) -> Self {
+    pub fn required(
+        name: impl Into<String>,
+        param_type: ParameterType,
+        description: impl Into<String>,
+    ) -> Self {
         Self {
             name: name.into(),
             param_type,

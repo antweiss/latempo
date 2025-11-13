@@ -16,10 +16,7 @@ impl ToolSelector {
     }
 
     /// Select tools based on requirements
-    pub fn select_tools(
-        &self,
-        requirements: &WorkflowRequirements,
-    ) -> Result<Vec<ToolDefinition>> {
+    pub fn select_tools(&self, requirements: &WorkflowRequirements) -> Result<Vec<ToolDefinition>> {
         let mut tools = Vec::new();
 
         for tool_name in &requirements.tools_needed {
@@ -134,7 +131,10 @@ mod tests {
         let requirements = WorkflowRequirements {
             name: "test".to_string(),
             description: "test".to_string(),
-            tools_needed: vec!["slack_send_message".to_string(), "run_claude_agent".to_string()],
+            tools_needed: vec![
+                "slack_send_message".to_string(),
+                "run_claude_agent".to_string(),
+            ],
             credentials_needed: vec![],
             approval_points: vec![],
             trigger_type: TriggerType::Manual,

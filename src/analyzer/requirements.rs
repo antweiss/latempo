@@ -72,11 +72,16 @@ impl RequirementsAnalyzer {
 
     /// Analyze a workflow description and extract requirements
     pub async fn analyze(&self, description: &str) -> Result<WorkflowRequirements> {
-        info!("Analyzing workflow description ({} chars)", description.len());
+        info!(
+            "Analyzing workflow description ({} chars)",
+            description.len()
+        );
 
         // Validate description
         if description.trim().is_empty() {
-            return Err(WorkflowError::validation("Workflow description cannot be empty"));
+            return Err(WorkflowError::validation(
+                "Workflow description cannot be empty",
+            ));
         }
 
         if description.len() < 20 {
@@ -231,7 +236,9 @@ Return the analysis as JSON following the specified format."#,
 
         // Validate steps
         if requirements.steps.is_empty() {
-            return Err(WorkflowError::validation("Workflow must have at least one step"));
+            return Err(WorkflowError::validation(
+                "Workflow must have at least one step",
+            ));
         }
 
         // Validate step dependencies
@@ -248,7 +255,11 @@ Return the analysis as JSON following the specified format."#,
 
         // Validate approval points reference valid steps
         for approval in &requirements.approval_points {
-            if !requirements.steps.iter().any(|s| s.step_id == approval.step_id) {
+            if !requirements
+                .steps
+                .iter()
+                .any(|s| s.step_id == approval.step_id)
+            {
                 return Err(WorkflowError::validation(format!(
                     "Approval point references non-existent step '{}'",
                     approval.step_id

@@ -27,10 +27,7 @@ pub fn prompt_confirm(prompt: &str, default: bool) -> Result<bool> {
 
 /// Prompt for selection from a list
 pub fn prompt_select<T: ToString>(prompt: &str, items: &[T]) -> Result<usize> {
-    Ok(Select::new()
-        .with_prompt(prompt)
-        .items(items)
-        .interact()?)
+    Ok(Select::new().with_prompt(prompt).items(items).interact()?)
 }
 
 /// Prompt for multiline text (workflow description)
@@ -40,7 +37,10 @@ pub fn prompt_multiline(prompt: &str) -> Result<String> {
 
     let mut lines = Vec::new();
     loop {
-        let line: String = Input::new().with_prompt(">").allow_empty(true).interact_text()?;
+        let line: String = Input::new()
+            .with_prompt(">")
+            .allow_empty(true)
+            .interact_text()?;
 
         if line.trim().is_empty() && !lines.is_empty() {
             break;

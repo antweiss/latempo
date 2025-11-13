@@ -183,7 +183,7 @@ impl WorkflowCompiler {
     fn compile_conditional_step(&self, req_step: &RequiredStep) -> Result<StepTypeSpec> {
         Ok(StepTypeSpec::Conditional {
             config: ConditionalConfig {
-                condition: format!("result.success == true"),
+                condition: "result.success == true".to_string(),
                 then_step: format!("{}_then", req_step.step_id),
                 else_step: Some(format!("{}_else", req_step.step_id)),
             },
@@ -295,7 +295,9 @@ impl WorkflowCompiler {
     fn validate_spec(&self, spec: &WorkflowSpec) -> Result<()> {
         // Check for steps
         if spec.steps.is_empty() {
-            return Err(WorkflowError::validation("Workflow must have at least one step"));
+            return Err(WorkflowError::validation(
+                "Workflow must have at least one step",
+            ));
         }
 
         // Validate step dependencies

@@ -22,8 +22,13 @@ async fn main() -> anyhow::Result<()> {
             skip_dry_run,
             auto_deploy,
         } => {
-            latempo::cli::commands::create_workflow(description, skip_dry_run, auto_deploy, &settings)
-                .await
+            latempo::cli::commands::create_workflow(
+                description,
+                skip_dry_run,
+                auto_deploy,
+                &settings,
+            )
+            .await
         }
         Commands::List { status } => {
             latempo::cli::commands::list_workflows(status, &settings).await

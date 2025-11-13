@@ -66,22 +66,15 @@ impl Settings {
                 secret_access_key: env::var("AWS_SECRET_ACCESS_KEY").ok(),
             },
             temporal: TemporalConfig {
-                host: env::var("TEMPORAL_HOST")
-                    .unwrap_or_else(|_| "localhost:7233".to_string()),
-                namespace: env::var("TEMPORAL_NAMESPACE")
-                    .unwrap_or_else(|_| "default".to_string()),
-                cert_path: env::var("TEMPORAL_CERT_PATH")
-                    .ok()
-                    .map(PathBuf::from),
-                key_path: env::var("TEMPORAL_KEY_PATH")
-                    .ok()
-                    .map(PathBuf::from),
+                host: env::var("TEMPORAL_HOST").unwrap_or_else(|_| "localhost:7233".to_string()),
+                namespace: env::var("TEMPORAL_NAMESPACE").unwrap_or_else(|_| "default".to_string()),
+                cert_path: env::var("TEMPORAL_CERT_PATH").ok().map(PathBuf::from),
+                key_path: env::var("TEMPORAL_KEY_PATH").ok().map(PathBuf::from),
             },
             ai: AiConfig {
-                anthropic_api_key: env::var("ANTHROPIC_API_KEY")
-                    .map_err(|_| {
-                        WorkflowError::config("ANTHROPIC_API_KEY environment variable is required")
-                    })?,
+                anthropic_api_key: env::var("ANTHROPIC_API_KEY").map_err(|_| {
+                    WorkflowError::config("ANTHROPIC_API_KEY environment variable is required")
+                })?,
                 openai_api_key: env::var("OPENAI_API_KEY").ok(),
                 default_model: env::var("DEFAULT_AI_MODEL")
                     .unwrap_or_else(|_| "claude-sonnet-4.5-20250929".to_string()),
@@ -96,8 +89,7 @@ impl Settings {
             },
             app: AppConfig {
                 log_level: env::var("LOG_LEVEL").unwrap_or_else(|_| "info".to_string()),
-                environment: env::var("ENVIRONMENT")
-                    .unwrap_or_else(|_| "development".to_string()),
+                environment: env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()),
             },
         })
     }

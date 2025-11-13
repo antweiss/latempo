@@ -2,7 +2,11 @@ use crate::cli::ui::{display_info, display_warning};
 use crate::config::Settings;
 use crate::utils::Result;
 
-pub async fn execute(_workflow_id: String, _mock_data: Option<String>, _settings: &Settings) -> Result<()> {
+pub async fn execute(
+    _workflow_id: String,
+    _mock_data: Option<String>,
+    _settings: &Settings,
+) -> Result<()> {
     display_info("Running dry-run test...");
     display_warning("Implementation in progress - workflow testing not yet available");
 

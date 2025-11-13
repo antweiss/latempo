@@ -51,19 +51,26 @@ impl PythonCodeGenerator {
     pub fn new() -> Result<Self> {
         let mut tera = Tera::default();
 
-        // Add templates from the templates directory
+        // Try to add templates from the templates directory
         let template_dir = Path::new("templates");
+        let workflow_template = template_dir.join("workflow.py.tera");
 
-        if template_dir.exists() {
+        if workflow_template.exists() {
+            // Load from files
             tera.add_template_files(vec![
                 (template_dir.join("workflow.py.tera"), Some("workflow")),
                 (template_dir.join("worker.py.tera"), Some("worker")),
-                (template_dir.join("requirements.txt.tera"), Some("requirements")),
+                (
+                    template_dir.join("requirements.txt.tera"),
+                    Some("requirements"),
+                ),
                 (template_dir.join("Dockerfile.tera"), Some("dockerfile")),
             ])
-            .map_err(|e| WorkflowError::TemplateError(format!("Failed to load templates: {}", e)))?;
+            .map_err(|e| {
+                WorkflowError::TemplateError(format!("Failed to load templates: {}", e))
+            })?;
         } else {
-            // Add inline templates for testing
+            // Use inline templates
             tera.add_raw_template("workflow", WORKFLOW_TEMPLATE)
                 .map_err(|e| WorkflowError::TemplateError(e.to_string()))?;
             tera.add_raw_template("worker", WORKER_TEMPLATE)
@@ -86,8 +93,10 @@ impl PythonCodeGenerator {
         let requirements = self.generate_requirements(spec)?;
         let dockerfile = self.generate_dockerfile(spec)?;
 
-        info!("Successfully generated {} lines of Python code",
-            workflow_code.lines().count() + worker_code.lines().count());
+        info!(
+            "Successfully generated {} lines of Python code",
+            workflow_code.lines().count() + worker_code.lines().count()
+        );
 
         Ok(GeneratedCode {
             workflow_code,
@@ -158,8 +167,9 @@ impl PythonCodeGenerator {
             StepTypeSpec::Conditional { .. } => "conditional",
         };
 
-        let config = serde_json::to_value(&step.step_type)
-            .map_err(|e| WorkflowError::CodeGenerationError(format!("Failed to serialize step: {}", e)))?;
+        let config = serde_json::to_value(&step.step_type).map_err(|e| {
+            WorkflowError::CodeGenerationError(format!("Failed to serialize step: {}", e))
+        })?;
 
         let inputs: Vec<InputContext> = step
             .inputs
@@ -206,22 +216,38 @@ impl PythonCodeGenerator {
         for step in steps {
             match &step.step_type {
                 StepTypeSpec::Agent { .. } => {
-                    if !imports.contains(&"from activities.ai.claude import run_claude_agent".to_string()) {
-                        imports.push("from activities.ai.claude import run_claude_agent".to_string());
+                    if !imports
+                        .contains(&"from activities.ai.claude import run_claude_agent".to_string())
+                    {
+                        imports
+                            .push("from activities.ai.claude import run_claude_agent".to_string());
                     }
                 }
                 StepTypeSpec::Activity { config } => {
-                    let import = format!("from {} import {}",
-                        config.python_path.rsplitn(2, '.').nth(1).unwrap_or(&config.python_path),
-                        config.python_path.split('.').last().unwrap_or(&config.activity_name)
+                    let import = format!(
+                        "from {} import {}",
+                        config
+                            .python_path
+                            .rsplit_once('.')
+                            .map(|x| x.0)
+                            .unwrap_or(&config.python_path),
+                        config
+                            .python_path
+                            .rsplit('.')
+                            .next()
+                            .unwrap_or(&config.activity_name)
                     );
                     if !imports.contains(&import) {
                         imports.push(import);
                     }
                 }
                 StepTypeSpec::Approval { .. } => {
-                    if !imports.contains(&"from workflows.approval import HumanApprovalWorkflow".to_string()) {
-                        imports.push("from workflows.approval import HumanApprovalWorkflow".to_string());
+                    if !imports.contains(
+                        &"from workflows.approval import HumanApprovalWorkflow".to_string(),
+                    ) {
+                        imports.push(
+                            "from workflows.approval import HumanApprovalWorkflow".to_string(),
+                        );
                     }
                 }
                 _ => {}

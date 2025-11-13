@@ -165,7 +165,10 @@ impl AnthropicClient {
         }
 
         let text = anthropic_response.content[0].text.clone();
-        debug!("Received response from Anthropic API ({} chars)", text.len());
+        debug!(
+            "Received response from Anthropic API ({} chars)",
+            text.len()
+        );
 
         Ok(text)
     }
