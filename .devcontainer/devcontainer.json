@@ -1,0 +1,90 @@
+{
+  "name": "Latempo - AI Workflow Generator",
+  "image": "mcr.microsoft.com/devcontainers/rust:1-bookworm",
+
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+    "ghcr.io/devcontainers/features/aws-cli:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "serayuzgur.crates",
+        "vadimcn.vscode-lldb",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "amazonwebservices.aws-toolkit-vscode",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.makefile-tools"
+      ],
+      "settings": {
+        "rust-analyzer.checkOnSave.command": "clippy",
+        "rust-analyzer.checkOnSave.extraArgs": ["--all-targets", "--all-features"],
+        "rust-analyzer.cargo.features": "all",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "rust-lang.rust-analyzer",
+        "[rust]": {
+          "editor.defaultFormatter": "rust-lang.rust-analyzer",
+          "editor.formatOnSave": true
+        },
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.python",
+          "editor.formatOnSave": true
+        },
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black",
+        "files.watcherExclude": {
+          "**/target/**": true
+        },
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+
+  "remoteEnv": {
+    "RUST_BACKTRACE": "1",
+    "CARGO_TERM_COLOR": "always"
+  },
+
+  "forwardPorts": [8080, 3000],
+
+  "portsAttributes": {
+    "8080": {
+      "label": "API Server",
+      "onAutoForward": "notify"
+    },
+    "3000": {
+      "label": "Development Server",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "mounts": [
+    "source=${localWorkspaceFolder}/.env,target=/workspaces/latempo/.env,type=bind,consistency=cached"
+  ],
+
+  "containerEnv": {
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+    "AWS_REGION": "${localEnv:AWS_REGION:us-east-1}",
+    "AWS_ACCESS_KEY_ID": "${localEnv:AWS_ACCESS_KEY_ID}",
+    "AWS_SECRET_ACCESS_KEY": "${localEnv:AWS_SECRET_ACCESS_KEY}"
+  }
+}
